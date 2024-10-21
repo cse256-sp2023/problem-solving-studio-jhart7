@@ -62,6 +62,45 @@ $('.permbutton').click( function( e ) {
     perm_dialog.attr('filepath', path)
     perm_dialog.dialog('open')
     //open_permissions_dialog(path)
+    
+    let eff_perm_panel = define_new_effective_permissions("eff_perm_panel", true);
+    $('#sidepanel').empty();
+    $('#sidepanel').append(eff_perm_panel);
+
+    eff_perm_panel.attr('filepath', path);
+    eff_perm_panel.attr('username', 'administrator');
+
+    let user_select = define_new_user_select_field('user_select', 'Select User', function(selected_user) {
+        $('#eff_perm_panel').attr('username', selected_user);
+        $('#eff_perm_panel').attr('filepath', '/C/presentation_documents/important_file.txt');
+    });
+
+    $('#sidepanel').append(user_select);
+
+    let explanation_dialog = define_new_dialog('explanation_dialog', 'Permission Explanation');
+
+    $('.perm_info').click(function() {
+        console.log('clicked!');
+
+        let filepath = $('#eff_perm_panel').attr('filepath');
+        let username = $('#eff_perm_panel').attr('username');
+        let permission_name = $(this).attr('permission_name');
+
+        console.log('Filepath:', filepath);
+        console.log('Username:', username);
+        console.log('Permission:', permission_name);
+
+        let file_obj = path_to_file[filepath];
+        let user_obj = all_users[username];
+
+        let explanation = allow_user_action(file_obj, user_obj, permission_name);
+        let explanation_text = get_explanation_text(explanation);
+
+        explanation_dialog.empty();
+        explanation_dialog.append(`<p>${explanation_text}</p>`);
+
+        explanation_dialog.dialog('open');
+    });
 
     // Deal with the fact that folders try to collapse/expand when you click on their permissions button:
     e.stopPropagation() // don't propagate button click to element underneath it (e.g. folder accordion)
